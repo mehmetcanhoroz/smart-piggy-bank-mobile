@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:smartpiggybank/screens/transactions_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartpiggybank/screens/home_screen.dart';
+import 'package:smartpiggybank/screens/users_page.dart';
 
 class NavDrawer extends StatelessWidget {
+  void logoutApp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -22,15 +29,19 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.input),
             title: Text('Homepage'),
-            onTap: () => {},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Transactions'),
-            onTap: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => TransactionsPage()))
-            },
+            onTap: () => {Navigator.of(context).pop()},
           ),
           ListTile(
             leading: Icon(Icons.settings),
@@ -40,12 +51,22 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.border_color),
             title: Text('Users'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UsersPage(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () {
+              this.logoutApp();
+              Navigator.of(context).pop();
+            },
           ),
         ],
       ),

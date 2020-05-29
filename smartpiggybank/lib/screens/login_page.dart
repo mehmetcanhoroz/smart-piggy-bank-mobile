@@ -1,5 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartpiggybank/screens/home_screen.dart';
+import 'package:smartpiggybank/services/server_operations.dart';
 import 'package:smartpiggybank/widgets/bezierContainer.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,6 +19,75 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _isLoading = false;
+  String _email = 'email';
+  String _password = '';
+
+  void loginTap() {
+    setState(() {
+      _isLoading = true;
+    });
+    loginNetwork();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void loginNetwork() async {
+    print('Login tap pressed -> ' + _email + ' - ' + _password);
+    ServerOperations serverOperations = ServerOperations();
+    http.Response response = await serverOperations.login(_email, _password);
+    var data;
+    if (response != null) {
+      data = jsonDecode(response.body);
+      print('Response is not null');
+      if (response.statusCode == 200) {
+        print('Response 200');
+        print(data);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', data['token']);
+        await prefs.setString('email', _email);
+        await prefs.setString('password', _password);
+
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else {
+        print('INFO WRONG');
+        print('Response Error');
+        print(data['errors']['email'][0]);
+        setState(() {
+          _isLoading = false;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Login Failed!"),
+              content: new Text(data['errors']['email'][0]),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      print('response is null');
+    }
+  }
+
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -47,11 +123,23 @@ class _LoginPageState extends State<LoginPage> {
             height: 10,
           ),
           TextField(
-              obscureText: isPassword,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true))
+            obscureText: isPassword,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              fillColor: Color(0xfff3f3f4),
+              filled: true,
+            ),
+            onChanged: (value) {
+              if (isPassword)
+                setState(() {
+                  this._password = value;
+                });
+              else
+                setState(() {
+                  this._email = value;
+                });
+            },
+          )
         ],
       ),
     );
@@ -60,6 +148,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget _submitButton() {
     return FlatButton(
       padding: EdgeInsets.all(0),
+      onPressed: () {
+        loginTap();
+
+        /*Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));*/
+      },
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(vertical: 15),
@@ -216,7 +310,7 @@ class _LoginPageState extends State<LoginPage> {
           text: TextSpan(
             text: 'SPB',
             style: GoogleFonts.portLligatSans(
-              textStyle: Theme.of(context).textTheme.display1,
+              textStyle: Theme.of(context).textTheme.headline4,
               fontSize: 30,
               fontWeight: FontWeight.w700,
               color: Color(0xffe48a9f),
@@ -239,39 +333,42 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
-        body: Container(
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-              top: -height * .15,
-              right: -MediaQuery.of(context).size.width * .4,
-              child: BezierContainer()),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(height: height * .2),
-                  _title(),
-                  SizedBox(height: 50),
-                  _emailPasswordWidget(),
-                  SizedBox(height: 20),
-                  _submitButton(),
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      child: Scaffold(
+          body: Container(
+        height: height,
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+                top: -height * .15,
+                right: -MediaQuery.of(context).size.width * .4,
+                child: BezierContainer()),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: height * .2),
+                    _title(),
+                    SizedBox(height: 50),
+                    _emailPasswordWidget(),
+                    SizedBox(height: 20),
+                    _submitButton(),
 //                  _divider(),
 //                  _facebookButton(),
 //                  SizedBox(height: height * .05),
-                  _createAccountLabel(),
-                ],
+                    _createAccountLabel(),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(top: 40, left: 0, child: _backButton()),
-        ],
-      ),
-    ));
+            Positioned(top: 40, left: 0, child: _backButton()),
+          ],
+        ),
+      )),
+    );
   }
 }

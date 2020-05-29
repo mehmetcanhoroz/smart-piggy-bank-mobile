@@ -53,6 +53,13 @@ class PiggyBankAppBar extends AppBar {
           elevation: 0,
           backgroundColor: Theme.of(context).backgroundColor,
           automaticallyImplyLeading: true,
+          textTheme: TextTheme(
+            headline6: TextStyle(
+              color: LightColor.titleTextColor,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           leading: IconButton(
             icon: Icon(
               Icons.short_text,
