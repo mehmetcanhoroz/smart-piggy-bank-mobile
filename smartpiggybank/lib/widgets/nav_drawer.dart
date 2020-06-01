@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartpiggybank/screens/home_screen.dart';
+import 'package:smartpiggybank/screens/transactions_page.dart';
 import 'package:smartpiggybank/screens/users_page.dart';
 
 class NavDrawer extends StatelessWidget {
-  void logoutApp() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('token');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -41,7 +36,14 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Transactions'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransactionsPage(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.settings),
@@ -64,8 +66,11 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () {
-              this.logoutApp();
-              Navigator.of(context).pop();
+//              Navigator.of(context).pop();
+//              Navigator.pushReplacementNamed(context, '/login');
+
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/welcome", (r) => false);
             },
           ),
         ],

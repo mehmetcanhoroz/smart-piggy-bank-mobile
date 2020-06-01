@@ -46,10 +46,12 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         print('Response 200');
         print(data);
+        // TODO Set user type and change image accordingly
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token']);
-        await prefs.setString('email', _email);
-        await prefs.setString('password', _password);
+        await prefs.setString('name', data['user']['name']);
+        await prefs.setString('email', data['user']['email']);
+//        await prefs.setString('password', _password);
 
         setState(() {
           _isLoading = false;
@@ -91,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _backButton() {
     return InkWell(
       onTap: () {
-        Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(context, "/welcome", (r) => false);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -209,54 +211,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
           SizedBox(
             width: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _facebookButton() {
-    return Container(
-      height: 50,
-      margin: EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xff1959a9),
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(5),
-                    topLeft: Radius.circular(5)),
-              ),
-              alignment: Alignment.center,
-              child: Text('f',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w400)),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xff2872ba),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(5),
-                    topRight: Radius.circular(5)),
-              ),
-              alignment: Alignment.center,
-              child: Text('Log in with Facebook',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400)),
-            ),
           ),
         ],
       ),

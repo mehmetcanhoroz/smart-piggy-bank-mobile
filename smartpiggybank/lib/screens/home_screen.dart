@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartpiggybank/services/server_operations.dart';
 import 'package:smartpiggybank/theme/extention.dart';
 import 'package:smartpiggybank/theme/light_color.dart';
 import 'package:smartpiggybank/theme/text_styles.dart';
@@ -14,43 +20,140 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<ScaffoldState> _key = GlobalKey(); // add this
+  bool _isLoading = true;
+  String _name = '';
+  String _gUserCount = '0';
+  String _gTransactionCount = '0';
+  String _gCalendarCount = '0';
+  String _gTotalSaving = '0';
+  String _uTransactionCount = '0';
+  String _uWeeklyTransaction = '0';
+  String _uCoinCount = '0';
+  String _uTotalSaving = '0';
+
+  welcomePageNetwork() async {
+    ServerOperations serverOperations = ServerOperations();
+    http.Response response = await serverOperations.getDashboardDetails();
+    var data;
+
+    if (response != null) {
+      data = jsonDecode(response.body);
+      print('Response is not null');
+      if (response.statusCode == 200) {
+        print('Response 200');
+        print(data);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+//        await prefs.setString('password', _password);
+
+        setState(() {
+          _isLoading = false;
+
+          this._name = prefs.getString('name');
+          this._gUserCount = data['global']['userCount'].toString();
+          this._gTransactionCount =
+              data['global']['transactionCount'].toString();
+          this._gCalendarCount = data['global']['calendarCount'].toString();
+          this._gTotalSaving = data['global']['totalSaving'].toString();
+          this._uTransactionCount = data['user']['transactionCount'].toString();
+          this._uWeeklyTransaction =
+              data['user']['weeklyTransaction'].toString();
+          this._uCoinCount = data['user']['coinCount'].toString();
+          this._uTotalSaving = data['user']['totalSaving'].toString();
+        });
+//        Navigator.push(
+//            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else {
+        print('ERROR DASHBOARD DETAILS');
+        print('Response Error');
+        print(data);
+        setState(() {
+          _isLoading = false;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Error"),
+              content: new Text(
+                  'We got an error while getting dashboard details. Please re-login!'),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Ok"),
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, "/welcome", (r) => false);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      print('response is null');
+    }
+  }
+
+  Future<void> refreshDashboardDetails() async {
+    setState(() {
+      _isLoading = true;
+    });
+    this.welcomePageNetwork();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    welcomePageNetwork();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _key,
-      // set it here
-      drawer: NavDrawer(),
+    final height = MediaQuery.of(context).size.height;
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      child: Scaffold(
+        key: _key,
+        // set it here
+        drawer: NavDrawer(),
 //      endDrawer: NavDrawer(),
-      /*appBar: AppBar(
-        title: Text('Smart Piggybank'),
-      ),*/
-      appBar: PiggyBankAppBar(
-        appBarTitle: Text('Smart Piggy Bank'),
-        context: context,
-        parentKey: _key,
-      ),
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverList(
-            delegate: SliverChildListDelegate([
-              _header(),
-              _category(
-                  categoryTitle: 'Smart Piggy Bank Stats',
-                  categoryItems: _piggyBankStatsList()),
-              _category(
-                  categoryTitle: 'Your Stats',
-                  categoryItems: _piggyBankUserStatsList()),
-            ]),
+        /*appBar: AppBar(
+          title: Text('Smart Piggybank'),
+        ),*/
+        appBar: PiggyBankAppBar(
+          appBarTitle: Text('Smart Piggy Bank'),
+          context: context,
+          parentKey: _key,
+        ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: RefreshIndicator(
+          onRefresh: refreshDashboardDetails,
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  _header(),
+                  _category(
+                      categoryTitle: 'Smart Piggy Bank Stats',
+                      categoryItems: _piggyBankStatsList()),
+                  _category(
+                      categoryTitle: 'Your Stats',
+                      categoryItems: _piggyBankUserStatsList()),
+                ]),
+              ),
+            ],
           ),
-        ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            refreshDashboardDetails();
+          },
+          tooltip: 'Refresh Dashboard Details',
+          child: Icon(Icons.refresh),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Refresh',
-        child: Icon(Icons.refresh),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -59,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text("Hello,", style: TextStyles.title.subTitleColor),
-        Text("Peter Parker", style: TextStyles.h1Style),
+        Text(this._name, style: TextStyles.h1Style),
       ],
     ).p16;
   }
@@ -131,26 +234,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _piggyBankStatsList() {
     return <Widget>[
-      _categoryCard("0", "Transaction Count", FontAwesomeIcons.dollarSign,
+      _categoryCard(this._gTransactionCount, "Transaction Count",
+          FontAwesomeIcons.dollarSign,
           color: LightColor.green, lightColor: LightColor.lightGreen),
-      _categoryCard("0", "Today Transactions", FontAwesomeIcons.chartBar,
+      _categoryCard(
+          this._gCalendarCount, "Today Transactions", FontAwesomeIcons.chartBar,
           color: LightColor.skyBlue, lightColor: LightColor.lightBlue),
-      _categoryCard("0", "Registered User", FontAwesomeIcons.userPlus,
+      _categoryCard(
+          this._gUserCount, "Registered User", FontAwesomeIcons.userPlus,
           color: LightColor.orange, lightColor: LightColor.lightOrange),
-      _categoryCard("0 TL", "Total Money Saving", FontAwesomeIcons.liraSign,
+      _categoryCard("${this._gTotalSaving} TL", "Total Money Saving",
+          FontAwesomeIcons.liraSign,
           color: LightColor.purple, lightColor: LightColor.purpleLight),
     ];
   }
 
   List<Widget> _piggyBankUserStatsList() {
     return <Widget>[
-      _categoryCard("0", "Transaction Count", FontAwesomeIcons.coins,
+      _categoryCard(
+          this._uTransactionCount, "Transaction Count", FontAwesomeIcons.coins,
           color: LightColor.green, lightColor: LightColor.lightGreen),
-      _categoryCard("0", "Weekly Transactions", FontAwesomeIcons.chartBar,
+      _categoryCard(this._uWeeklyTransaction, "Weekly Transactions",
+          FontAwesomeIcons.chartBar,
           color: LightColor.skyBlue, lightColor: LightColor.lightBlue),
-      _categoryCard("0", "Dropped Coin Count", FontAwesomeIcons.coins,
+      _categoryCard(
+          this._uCoinCount, "Dropped Coin Count", FontAwesomeIcons.coins,
           color: LightColor.orange, lightColor: LightColor.lightOrange),
-      _categoryCard("0 TL", "Your Total Saving", FontAwesomeIcons.liraSign,
+      _categoryCard("${this._uTotalSaving} TL", "Your Total Saving",
+          FontAwesomeIcons.liraSign,
           color: LightColor.purple, lightColor: LightColor.purpleLight),
     ];
   }

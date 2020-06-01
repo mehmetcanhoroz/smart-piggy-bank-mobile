@@ -22,6 +22,10 @@ class _UsersPageState extends State<UsersPage> {
     this.prepareUserListForView();
   }
 
+  Future<void> refreshUsersList() async {
+    this.prepareUserListForView();
+  }
+
   GlobalKey<ScaffoldState> _key = GlobalKey(); // add this
   @override
   Widget build(BuildContext context) {
@@ -37,12 +41,15 @@ class _UsersPageState extends State<UsersPage> {
           context: context,
           appBarTitle: Text('Users'),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              children: <Widget>[
-                _courseList(),
-              ],
+        body: RefreshIndicator(
+          onRefresh: refreshUsersList,
+          child: SingleChildScrollView(
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  _courseList(),
+                ],
+              ),
             ),
           ),
         ),
@@ -79,6 +86,9 @@ class _UsersPageState extends State<UsersPage> {
 
   Future<void> prepareUserListForView() async {
 //    sleep(Duration(seconds: 3));
+    setState(() {
+      _isLoading = true;
+    });
     UserList userList = UserList();
     List<UserModel> uList = await userList.getUsers();
 

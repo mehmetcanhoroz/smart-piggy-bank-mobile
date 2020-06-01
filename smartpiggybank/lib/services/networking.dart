@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String getUsersPath = 'users';
 const String loginPath = 'login';
+const String dashboardPath = 'dashboard';
+const String transactionsPath = 'transactions';
 
 class NetworkHelper {
   NetworkHelper(this.url);
@@ -30,7 +32,7 @@ class NetworkHelper {
       print(response.body);
       String dataS = response.body;
       var data = jsonDecode(dataS);
-      return data;
+      return response;
     } else {
       print('Error Request');
       print('response:' + response.toString());
@@ -50,6 +52,50 @@ class NetworkHelper {
         'password': password,
       }),
     );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      String dataS = response.body;
+      var data = jsonDecode(dataS);
+    } else {
+      print('Error Request');
+      print('response:' + response.body.toString());
+      print('status code:' + response.statusCode.toString());
+    }
+    return response;
+  }
+
+  Future getDashboardData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = prefs.getString('token');
+    http.Response response = await http.get(_serverAddress + url, headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      String dataS = response.body;
+      var data = jsonDecode(dataS);
+    } else {
+      print('Error Request');
+      print('response:' + response.body.toString());
+      print('status code:' + response.statusCode.toString());
+    }
+    return response;
+  }
+
+  Future getDataAuth() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = prefs.getString('token');
+    http.Response response = await http.get(_serverAddress + url, headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 200) {
       print(response.body);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartpiggybank/screens/login_page.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -12,6 +13,11 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  void logoutApp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
+  }
+
   Widget _submitButton() {
     return InkWell(
       onTap: () {
@@ -115,6 +121,12 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    this.logoutApp();
   }
 
   @override

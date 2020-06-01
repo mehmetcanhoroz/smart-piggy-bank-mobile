@@ -16,4 +16,20 @@ class ServerOperations {
     print(data);
     return data;
   }
+
+  Future<dynamic> getDashboardDetails() async {
+    NetworkHelper networkHelper = NetworkHelper(dashboardPath);
+
+    var data = await networkHelper.getDashboardData();
+    print(data);
+    return data;
+  }
+
+  Future<dynamic> getTransactions() async {
+    NetworkHelper networkHelper = NetworkHelper(transactionsPath);
+
+    var data = await networkHelper.getDataAuth();
+    print(data);
+    return data;
+  }
 }

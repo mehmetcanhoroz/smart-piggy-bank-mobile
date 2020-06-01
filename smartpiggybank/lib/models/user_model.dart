@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:smartpiggybank/services/server_operations.dart';
+import 'package:http/http.dart' as http;
 
 class UserModel {
   String name;
@@ -23,8 +26,9 @@ class UserList {
 
   Future<List> getUsers() async {
     ServerOperations serverOperations = ServerOperations();
-    _data = await serverOperations.getUsers();
-    print(_data);
+    http.Response response = await serverOperations.getUsers();
+    _data = jsonDecode(response.body);
+        print(_data);
     List<UserModel> list = [];
 
     for (var item in _data) {
