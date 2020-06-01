@@ -10,6 +10,7 @@ class TransactionModel {
   int unknownItemCount;
   double value;
   bool isSuccess;
+  int id;
 
   TransactionModel({
     this.user,
@@ -18,6 +19,7 @@ class TransactionModel {
     this.isSuccess,
     this.value,
     this.unknownItemCount,
+    this.id,
   });
 }
 
@@ -36,6 +38,7 @@ class TransactionList {
 //      print('user name test => ' + item['user']['name']);
       list.add(
         TransactionModel(
+          id: item['id'],
           user: item['user'],
           coins: item['coins'],
           isSuccess: item['is_success'],

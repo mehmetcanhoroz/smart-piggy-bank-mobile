@@ -7,6 +7,7 @@ const String getUsersPath = 'users';
 const String loginPath = 'login';
 const String dashboardPath = 'dashboard';
 const String transactionsPath = 'transactions';
+const String transactionProofsPath = 'transaction_proofs';
 
 class NetworkHelper {
   NetworkHelper(this.url);

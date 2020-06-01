@@ -32,4 +32,23 @@ class ServerOperations {
     print(data);
     return data;
   }
+
+  Future<dynamic> getTransactionProofs() async {
+    NetworkHelper networkHelper = NetworkHelper(transactionProofsPath);
+
+    var data = await networkHelper.getDataAuth();
+    print(data);
+    return data;
+  }
+
+  Future<bool> checkIamAuthorized() async {
+    NetworkHelper networkHelper = NetworkHelper(dashboardPath);
+
+    var response = await networkHelper.getDataAuth();
+    print(response.statusCode);
+    if (response.statusCode != 200) {
+      return false;
+    }
+    return true;
+  }
 }

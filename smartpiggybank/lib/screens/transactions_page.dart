@@ -218,7 +218,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                                'Saving: ' + model.value.toString() + ' TL',
+                                'Id = ${model.id} - Saving: ' +
+                                    model.value.toString() +
+                                    ' TL',
                                 style: TextStyle(
                                     color: LightColor.purple,
                                     fontSize: 16,
