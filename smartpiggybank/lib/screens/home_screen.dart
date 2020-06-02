@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void _showDialog(context, message) {
+    print('show dialog icindeyim');
+    print('Notif Message = ' + message.toString());
+    // flutter defined function
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(message['notification']['title']),
+          content: new Text(message['notification']['body']),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                this.refreshDashboardDetails();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   GlobalKey<ScaffoldState> _key = GlobalKey(); // add this
   bool _isLoading = true;
   String _name = '';
@@ -107,6 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     welcomePageNetwork();
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+    _firebaseMessaging.configure(onMessage: (message) async {
+      String token = await _firebaseMessaging.getToken();
+      print('NOTIF GELDI');
+      print('NOTIF TOKEN = ' + token);
+      _showDialog(context, message);
+    });
   }
 
   @override
@@ -165,47 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(this._name, style: TextStyles.h1Style),
       ],
     ).p16;
-  }
-
-  Widget _appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Theme.of(context).backgroundColor,
-      automaticallyImplyLeading: true,
-      leading: IconButton(
-        icon: Icon(
-          Icons.short_text,
-          size: 30,
-          color: Colors.black,
-        ),
-        onPressed: () {
-          _key.currentState.openDrawer(); // this opens drawer
-        },
-      ),
-      actions: <Widget>[
-        Icon(
-          Icons.notifications_none,
-          size: 30,
-          color: LightColor.grey,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-//          child: ClipRRect(
-          child: ClipOval(
-//            borderRadius: BorderRadius.all(Radius.circular(13)),
-            child: Container(
-              // height: 40,
-              // width: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).backgroundColor,
-              ),
-              child: Image.asset("assets/user.png", fit: BoxFit.fitWidth),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _category({String categoryTitle, List<Widget> categoryItems}) {

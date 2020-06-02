@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "406546831364",
+    "firebase_url": "https://smartpiggybank-30801.firebaseio.com",
+    "project_id": "smartpiggybank-30801",
+    "storage_bucket": "smartpiggybank-30801.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406546831364:android:e159e63b7082dd76a33d51",
+        "android_client_info": {
+          "package_name": "com.capstone0987.smartpiggybank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406546831364-uu6vso9b03quh599p19vfdrer1rf1069.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKNMP1q3oTDNQ640Rxuw2KFpjfs8AkEEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406546831364-uu6vso9b03quh599p19vfdrer1rf1069.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "406546831364-85glstd1nhufk9qmvscmv8ov1lmc3ern.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.capstone0987.smartpiggybank"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

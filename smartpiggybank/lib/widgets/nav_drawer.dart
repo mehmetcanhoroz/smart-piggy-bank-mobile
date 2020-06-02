@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartpiggybank/screens/home_screen.dart';
+import 'package:smartpiggybank/screens/leaderboard_page.dart';
+import 'package:smartpiggybank/screens/statistics_page.dart';
 import 'package:smartpiggybank/screens/transaction_proofs_page.dart';
 import 'package:smartpiggybank/screens/transactions_page.dart';
 import 'package:smartpiggybank/screens/users_page.dart';
@@ -55,6 +58,30 @@ class NavDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TransactionProofsPage(),
+                ),
+              ),
+            },
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.listAlt),
+            title: Text('Leaderboard'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LeaderboardPage(),
+                ),
+              ),
+            },
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.chartBar),
+            title: Text('Statistics'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StatisticsPage(),
                 ),
               ),
             },

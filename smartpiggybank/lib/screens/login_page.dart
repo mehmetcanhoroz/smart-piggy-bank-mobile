@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -20,19 +21,58 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
-  String _email = 'email';
+  String _email = '';
   String _password = '';
 
   void loginTap() {
-    setState(() {
-      _isLoading = true;
-    });
-    loginNetwork();
+    if (this._email.trim().length < 1 || this._password.trim().length < 1) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Fill all inputs!"),
+            content: new Text('You have to fill al inputs!'),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        _isLoading = true;
+      });
+      setDeviceId();
+      loginNetwork();
+    }
+  }
+
+  void setDeviceId() async {
+    String id = await _getId();
+    print('DEVICE ID = ' + id);
   }
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<String> _getId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else {
+      AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId; // unique ID on Android
+    }
   }
 
   void loginNetwork() async {

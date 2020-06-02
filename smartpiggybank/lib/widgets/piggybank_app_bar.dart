@@ -71,11 +71,11 @@ class PiggyBankAppBar extends AppBar {
             },
           ),
           actions: <Widget>[
-            Icon(
+            /*Icon(
               Icons.notifications_none,
               size: 30,
               color: LightColor.grey,
-            ),
+            ),*/
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
 //          child: ClipRRect(
