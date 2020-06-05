@@ -7,6 +7,7 @@ import 'package:smartpiggybank/screens/statistics_page.dart';
 import 'package:smartpiggybank/screens/transaction_proofs_page.dart';
 import 'package:smartpiggybank/screens/transactions_page.dart';
 import 'package:smartpiggybank/screens/users_page.dart';
+import 'package:smartpiggybank/screens/wishlists_page.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -70,6 +71,18 @@ class NavDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => LeaderboardPage(),
+                ),
+              ),
+            },
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.wallet),
+            title: Text('Wishlists'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WishlistsPage(),
                 ),
               ),
             },

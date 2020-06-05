@@ -36,6 +36,7 @@ dependencies:
   firebase_messaging: ^6.0.16
   device_info: ^0.4.2+4
   webview_flutter: ^0.3.22+1
+  percent_indicator: ^2.1.1
 
 dev_dependencies:
   flutter_test:

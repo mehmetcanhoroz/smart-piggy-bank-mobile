@@ -9,6 +9,7 @@ const String registerPath = 'register';
 const String dashboardPath = 'dashboard';
 const String transactionsPath = 'transactions';
 const String transactionProofsPath = 'transaction_proofs';
+const String wishlistsPath = 'wishlists';
 
 class NetworkHelper {
   NetworkHelper(this.url);

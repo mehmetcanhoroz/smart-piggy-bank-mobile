@@ -49,6 +49,14 @@ class ServerOperations {
     return data;
   }
 
+  Future<dynamic> getWishlists() async {
+    NetworkHelper networkHelper = NetworkHelper(wishlistsPath);
+
+    var data = await networkHelper.getDataAuth();
+    print(data);
+    return data;
+  }
+
   Future<bool> checkIamAuthorized() async {
     NetworkHelper networkHelper = NetworkHelper(dashboardPath);
 
