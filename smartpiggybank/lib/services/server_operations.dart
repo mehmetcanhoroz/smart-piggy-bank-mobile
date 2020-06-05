@@ -17,6 +17,14 @@ class ServerOperations {
     return data;
   }
 
+  Future<dynamic> register(String name, String email, String password) async {
+    NetworkHelper networkHelper = NetworkHelper(registerPath);
+
+    var data = await networkHelper.postRegisterData(name, email, password);
+    print(data);
+    return data;
+  }
+
   Future<dynamic> getDashboardDetails() async {
     NetworkHelper networkHelper = NetworkHelper(dashboardPath);
 

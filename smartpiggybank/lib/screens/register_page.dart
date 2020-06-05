@@ -7,26 +7,29 @@ import 'package:http/http.dart' as http;
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartpiggybank/screens/home_screen.dart';
-import 'package:smartpiggybank/screens/register_page.dart';
+import 'package:smartpiggybank/screens/login_page.dart';
 import 'package:smartpiggybank/services/server_operations.dart';
 import 'package:smartpiggybank/widgets/bezierContainer.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  RegisterPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   String _email = '';
   String _password = '';
+  String _name = '';
 
   void loginTap() {
-    if (this._email.trim().length < 1 || this._password.trim().length < 1) {
+    if (this._email.trim().length < 1 ||
+        this._password.trim().length < 1 ||
+        this._name.trim().length < 1) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -51,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
       setDeviceId();
-      loginNetwork();
+      registerNetwork();
     }
   }
 
@@ -76,10 +79,11 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void loginNetwork() async {
-    print('Login tap pressed -> ' + _email + ' - ' + _password);
+  void registerNetwork() async {
+    print('register tap pressed -> ' + _email + ' - ' + _password);
     ServerOperations serverOperations = ServerOperations();
-    http.Response response = await serverOperations.login(_email, _password);
+    http.Response response =
+        await serverOperations.register(_name, _email, _password);
     var data;
     if (response != null) {
       data = jsonDecode(response.body);
@@ -102,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         print('INFO WRONG');
         print('Response Error');
-        print(data['errors']['email'][0]);
+//        print(data['errors']['email'][0]);
         setState(() {
           _isLoading = false;
         });
@@ -111,8 +115,8 @@ class _LoginPageState extends State<LoginPage> {
           builder: (BuildContext context) {
             // return object of type Dialog
             return AlertDialog(
-              title: new Text("Login Failed!"),
-              content: new Text(data['errors']['email'][0]),
+              title: new Text("Registration Failed!"),
+              content: new Text(prepareErrorMessage(data)),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -152,7 +156,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
+  Widget _entryField(String title,
+      {bool isPassword = false, bool isName = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -176,6 +181,10 @@ class _LoginPageState extends State<LoginPage> {
               if (isPassword)
                 setState(() {
                   this._password = value;
+                });
+              else if (isName)
+                setState(() {
+                  this._name = value;
                 });
               else
                 setState(() {
@@ -218,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                   Color(0xffc36d64),
                 ])),
         child: Text(
-          'Login',
+          'Register',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),
@@ -262,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RegisterPage()));
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),
@@ -272,14 +281,14 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Don\'t have an account ?',
+              'Do you have an account ?',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             SizedBox(
               width: 10,
             ),
             Text(
-              'Register',
+              'Login',
               style: TextStyle(
                   color: Color(0xffc36d64),
                   fontSize: 13,
@@ -319,6 +328,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
+        _entryField("Name", isName: true),
         _entryField("Email id"),
         _entryField("Password", isPassword: true),
       ],
@@ -366,4 +376,20 @@ class _LoginPageState extends State<LoginPage> {
       )),
     );
   }
+}
+
+String prepareErrorMessage(data) {
+  String result = '';
+  if (data['errors']['email'] != null) {
+    result += data['errors']['email'][0];
+  }
+
+  if (data['errors']['password'] != null) {
+    result += data['errors']['password'][0];
+  }
+
+  if (data['errors']['name'] != null) {
+    result += data['errors']['name'][0];
+  }
+  return result;
 }

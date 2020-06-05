@@ -4,6 +4,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartpiggybank/screens/home_screen.dart';
 import 'package:smartpiggybank/screens/login_page.dart';
+import 'package:smartpiggybank/screens/register_page.dart';
 import 'package:smartpiggybank/services/server_operations.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -88,8 +89,8 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget _signUpButton() {
     return InkWell(
       onTap: () {
-        /*Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignUpPage()));*/
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => RegisterPage()));
       },
       child: Container(
         width: MediaQuery.of(context).size.width,

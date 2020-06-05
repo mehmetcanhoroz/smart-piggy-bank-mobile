@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String getUsersPath = 'users';
 const String loginPath = 'login';
+const String registerPath = 'register';
 const String dashboardPath = 'dashboard';
 const String transactionsPath = 'transactions';
 const String transactionProofsPath = 'transaction_proofs';
@@ -51,6 +52,33 @@ class NetworkHelper {
       body: jsonEncode(<String, String>{
         'email': email,
         'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      String dataS = response.body;
+      var data = jsonDecode(dataS);
+    } else {
+      print('Error Request');
+      print('response:' + response.body.toString());
+      print('status code:' + response.statusCode.toString());
+    }
+    return response;
+  }
+
+  Future postRegisterData(String name, String email, String password) async {
+    http.Response response = await http.post(
+      _serverAddress + url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
       }),
     );
 
