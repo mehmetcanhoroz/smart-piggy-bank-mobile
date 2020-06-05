@@ -7,11 +7,13 @@ class WishlistModel {
   String name;
   double goal;
   double current;
+  double leftPercentage;
   bool isDone;
 
   WishlistModel({
     this.name,
     this.goal,
+    this.leftPercentage,
     this.current,
     this.isDone,
   });
@@ -33,6 +35,7 @@ class WishlistList {
       list.add(
         WishlistModel(
           name: item['name'],
+          leftPercentage: double.parse(item['left_percentage'].toString()),
           goal: double.parse(item['goal'].toString()),
           current: double.parse(item['current'].toString()),
           isDone: item['is_done'],

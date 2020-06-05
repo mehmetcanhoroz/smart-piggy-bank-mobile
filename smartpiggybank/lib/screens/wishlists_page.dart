@@ -45,6 +45,7 @@ class _WishlistsPageState extends State<WishlistsPage> {
         body: RefreshIndicator(
           onRefresh: refreshWishlistList,
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               child: Column(
                 children: <Widget>[
@@ -234,39 +235,48 @@ class _WishlistsPageState extends State<WishlistsPage> {
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Current: ${model.current}TL',
-                          textAlign: TextAlign.left,
-                          style: AppTheme.h6Style.copyWith(
-                            fontSize: 12,
-                            color: LightColor.grey,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Current: ${model.current}TL',
+                            textAlign: TextAlign.left,
+                            style: AppTheme.h6Style.copyWith(
+                              fontSize: 12,
+                              color: LightColor.grey,
+                            ),
                           ),
-                        ),
-                        Spacer(),
-                        Text(
-                          'Goal: ${model.goal}TL',
-                          textAlign: TextAlign.right,
-                          style: AppTheme.h6Style.copyWith(
-                            fontSize: 12,
-                            color: LightColor.grey,
+                          Spacer(),
+                          Text(
+                            'Goal: ${model.goal}TL',
+                            textAlign: TextAlign.right,
+                            style: AppTheme.h6Style.copyWith(
+                              fontSize: 12,
+                              color: LightColor.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(15.0),
+                      padding: EdgeInsets.only(left: 15.0, right: 15, top: 5),
                       child: Center(
                         child: new LinearPercentIndicator(
-                          width: width - 100,
+                          width: width - 75,
                           animation: true,
                           alignment: MainAxisAlignment.center,
                           animationDuration: 1000,
                           lineHeight: 20.0,
+                          center: Text(
+                            '${model.leftPercentage}%',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                           percent:
-                              model.isDone ? 1 : (model.current / model.goal),
+                              model.isDone ? 1 : model.leftPercentage / 100,
                           linearStrokeCap: LinearStrokeCap.butt,
                           progressColor: model.isDone
                               ? LightColor.green

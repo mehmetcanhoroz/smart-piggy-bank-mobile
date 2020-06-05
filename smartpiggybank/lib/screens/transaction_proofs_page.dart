@@ -43,6 +43,7 @@ class _TransactionProofsPageState extends State<TransactionProofsPage> {
         body: RefreshIndicator(
           onRefresh: refreshTransactionProofList,
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               child: Column(
                 children: <Widget>[

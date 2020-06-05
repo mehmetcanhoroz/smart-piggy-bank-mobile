@@ -44,6 +44,7 @@ class _UsersPageState extends State<UsersPage> {
         body: RefreshIndicator(
           onRefresh: refreshUsersList,
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               child: Column(
                 children: <Widget>[

@@ -44,6 +44,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         body: RefreshIndicator(
           onRefresh: refreshTransactionList,
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               child: Column(
                 children: <Widget>[
